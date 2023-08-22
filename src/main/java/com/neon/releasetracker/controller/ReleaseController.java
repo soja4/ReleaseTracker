@@ -1,0 +1,57 @@
+package com.neon.releasetracker.controller;
+
+import com.neon.releasetracker.domain.Release;
+import com.neon.releasetracker.dto.ReleaseDto;
+import com.neon.releasetracker.service.ReleaseService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Slf4j
+@RestController
+@RequestMapping("release-tracker")
+@RequiredArgsConstructor
+public class ReleaseController {
+
+    private final ReleaseService releaseService;
+
+    @GetMapping(path = "/releases")
+    public List<Release> getAllReleases(@RequestParam(required = false) String name,
+                                           @RequestParam(required = false) String description,
+                                           @RequestParam(required = false) String status,
+                                           @RequestParam(required = false) LocalDate releaseDate) {
+        log.info("request for filtering and getting releases");
+        return releaseService.filterAndFindReleases(name, description, status, releaseDate);
+    }
+
+    @GetMapping(path = "/releases/{releaseId}")
+    public ReleaseDto getReleaseById() {
+        log.info("request for getting release by id");
+        return null;
+    }
+    @PostMapping(path = "/releases")
+    public Release createRelease(@RequestBody ReleaseDto releaseDto) {
+        log.info("request for creating new release");
+        return releaseService.createRelease(releaseDto);
+    }
+    @PutMapping(path = "/releases/{releaseId}")
+    public ReleaseDto updateRelease() {
+        log.info("request for updating release");
+        return null;
+    }
+    @DeleteMapping(path = "/releases/{releaseId}")
+    public ReleaseDto deleteRelease() {
+        log.info("request for deleting release");
+        return null;
+    }
+}
