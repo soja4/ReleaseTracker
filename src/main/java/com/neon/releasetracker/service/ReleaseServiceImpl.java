@@ -68,4 +68,14 @@ public class ReleaseServiceImpl implements ReleaseService {
 
         return releaseRepository.save(newRelease);
     }
+
+    @Override
+    public Release findReleaseById(Integer releaseId) {
+        return releaseRepository.findById(releaseId).get();
+    }
+
+    @Override
+    public void deleteRelease(Integer releaseId) {
+        releaseRepository.deleteById(releaseId);
+    }
 }

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,9 +36,9 @@ public class ReleaseController {
     }
 
     @GetMapping(path = "/releases/{releaseId}")
-    public ReleaseDto getReleaseById() {
+    public Release findReleaseById(@PathVariable Integer releaseId) {
         log.info("request for getting release by id");
-        return null;
+        return releaseService.findReleaseById(releaseId);
     }
     @PostMapping(path = "/releases")
     public Release createRelease(@RequestBody ReleaseDto releaseDto) {
@@ -50,8 +51,8 @@ public class ReleaseController {
         return null;
     }
     @DeleteMapping(path = "/releases/{releaseId}")
-    public ReleaseDto deleteRelease() {
+    public void deleteRelease(@PathVariable Integer releaseId) {
         log.info("request for deleting release");
-        return null;
+        releaseService.deleteRelease(releaseId);;
     }
 }
