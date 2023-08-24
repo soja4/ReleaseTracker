@@ -1,6 +1,7 @@
 package com.neon.releasetracker.service;
 
 import com.neon.releasetracker.domain.Release;
+import com.neon.releasetracker.domain.ReleaseStatus;
 import com.neon.releasetracker.dto.ReleaseDto;
 import com.neon.releasetracker.exception.NotFoundException;
 import com.neon.releasetracker.exception.ReleaseTrackerException;
@@ -32,7 +33,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 
 
     @Override
-    public List<ReleaseDto> filterAndFindReleases(String name, String description, String releaseStatus, LocalDate releaseDate) {
+    public List<ReleaseDto> filterAndFindReleases(String name, String description, ReleaseStatus releaseStatus, LocalDate releaseDate) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Release> cq = cb.createQuery(Release.class);

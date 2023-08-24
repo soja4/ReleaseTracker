@@ -1,5 +1,6 @@
 package com.neon.releasetracker.controller;
 
+import com.neon.releasetracker.domain.ReleaseStatus;
 import com.neon.releasetracker.dto.ReleaseDto;
 import com.neon.releasetracker.service.ReleaseService;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +31,10 @@ public class ReleaseController {
     @GetMapping(path = "/releases")
     public List<ReleaseDto> getAllReleases(@RequestParam(required = false) String name,
                                            @RequestParam(required = false) String description,
-                                           @RequestParam(required = false) String status,
+                                           @RequestParam(required = false) ReleaseStatus releaseStatus,
                                            @RequestParam(required = false) LocalDate releaseDate) {
         log.info("request for filtering and getting releases");
-        return releaseService.filterAndFindReleases(name, description, status, releaseDate);
+        return releaseService.filterAndFindReleases(name, description, releaseStatus, releaseDate);
     }
 
     @GetMapping(path = "/releases/{releaseId}")
