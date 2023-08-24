@@ -2,7 +2,8 @@ package com.neon.releasetracker.service;
 
 import com.neon.releasetracker.domain.Release;
 import com.neon.releasetracker.dto.ReleaseDto;
-import com.neon.releasetracker.exception.ItemNotFoundException;
+import com.neon.releasetracker.exception.NotFoundException;
+import com.neon.releasetracker.exception.ReleaseTrackerException;
 import com.neon.releasetracker.mapper.Mapper;
 import com.neon.releasetracker.repository.ReleaseRepository;
 import jakarta.persistence.EntityManager;
@@ -61,14 +62,19 @@ public class ReleaseServiceImpl implements ReleaseService {
     @Override
     public ReleaseDto createRelease(ReleaseDto releaseDto) {
 
-        Release newRelease = Release.builder()
-                .name(releaseDto.getName())
-                .description(releaseDto.getDescription())
-                .releaseStatus(releaseDto.getReleaseStatus())
-                .releaseDate(releaseDto.getReleaseDate())
-                .build();
+        try {
+            Release newRelease = Release.builder()
+                    .name(releaseDto.getName())
+                    .description(releaseDto.getDescription())
+                    .releaseStatus(releaseDto.getReleaseStatus())
+                    .releaseDate(releaseDto.getReleaseDate())
+                    .build();
 
-        return Mapper.map(releaseRepository.save(newRelease));
+            return Mapper.map(releaseRepository.save(newRelease));
+        } catch (Exception e) {
+            log.error("Error creating new release: " + e.getCause().getMessage());
+            throw new ReleaseTrackerException("Error creating new release: " + e.getCause().getMessage());
+        }
     }
 
     @Override
@@ -79,12 +85,17 @@ public class ReleaseServiceImpl implements ReleaseService {
             return Mapper.map(releaseOptional.get());
         } else {
             log.error("Release with id: {} not found", releaseId);
-            throw new ItemNotFoundException(releaseId);
+            throw new NotFoundException(releaseId);
         }
     }
 
     @Override
     public void deleteRelease(Integer releaseId) {
+        Optional<Release> release = releaseRepository.findById(releaseId);
+        if (release.isEmpty()) {
+            log.error("Release with id: {} not found", releaseId);
+            throw new NotFoundException(releaseId);
+        }
         releaseRepository.deleteById(releaseId);
     }
 
@@ -94,13 +105,18 @@ public class ReleaseServiceImpl implements ReleaseService {
         Optional<Release> release = releaseRepository.findById(releaseId);
         if (release.isEmpty()) {
             log.error("Release with id: {} not found", releaseId);
-            throw new ItemNotFoundException(releaseId);
+            throw new NotFoundException(releaseId);
         }
-        release.get().setReleaseStatus(releaseDto.getReleaseStatus());
-        release.get().setName(releaseDto.getName());
-        release.get().setDescription(releaseDto.getDescription());
-        release.get().setReleaseDate(releaseDto.getReleaseDate());
+        try {
+            release.get().setReleaseStatus(releaseDto.getReleaseStatus());
+            release.get().setName(releaseDto.getName());
+            release.get().setDescription(releaseDto.getDescription());
+            release.get().setReleaseDate(releaseDto.getReleaseDate());
 
-        return Mapper.map(releaseRepository.save(release.get()));
+            return Mapper.map(releaseRepository.save(release.get()));
+        } catch (Exception e) {
+            log.error("Error updating new release with id: " + releaseId + " --- " + e.getCause().getMessage());
+            throw new ReleaseTrackerException("Error updating new release with id: " + releaseId + " --- " + e.getCause().getMessage());
+        }
     }
 }

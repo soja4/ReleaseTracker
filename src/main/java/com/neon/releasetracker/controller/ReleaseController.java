@@ -4,6 +4,8 @@ import com.neon.releasetracker.dto.ReleaseDto;
 import com.neon.releasetracker.service.ReleaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,8 +52,9 @@ public class ReleaseController {
         return releaseService.updateRelease(releaseDto, releaseId);
     }
     @DeleteMapping(path = "/releases/{releaseId}")
-    public void deleteRelease(@PathVariable Integer releaseId) {
+    public ResponseEntity<String> deleteRelease(@PathVariable Integer releaseId) {
         log.info("request for deleting release");
-        releaseService.deleteRelease(releaseId);;
+        releaseService.deleteRelease(releaseId);
+        return new ResponseEntity<>("Release is deleted", HttpStatus.OK);
     }
 }
