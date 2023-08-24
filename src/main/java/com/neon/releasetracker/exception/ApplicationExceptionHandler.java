@@ -3,6 +3,7 @@ package com.neon.releasetracker.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -38,5 +39,18 @@ public class ApplicationExceptionHandler {
         return new ResponseEntity<>(
                 apiExceptionOverride,
                 HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Object> handleApiRequestNotReadableException(HttpMessageNotReadableException e) {
+
+        ApiExceptionOverride apiExceptionOverride = new ApiExceptionOverride(
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST,
+                ZonedDateTime.now()
+        );
+        log.error("Custom - Exception (BAD_REQUEST): {}", apiExceptionOverride);
+        return new ResponseEntity<>(
+                apiExceptionOverride,
+                HttpStatus.BAD_REQUEST);
     }
 }
