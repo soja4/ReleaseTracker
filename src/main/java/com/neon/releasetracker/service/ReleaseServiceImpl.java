@@ -1,8 +1,9 @@
 package com.neon.releasetracker.service;
 
 import com.neon.releasetracker.domain.Release;
-import com.neon.releasetracker.domain.ReleaseStatus;
 import com.neon.releasetracker.dto.ReleaseDto;
+import com.neon.releasetracker.exception.ItemNotFoundException;
+import com.neon.releasetracker.mapper.Mapper;
 import com.neon.releasetracker.repository.ReleaseRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -29,7 +31,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 
 
     @Override
-    public List<Release> filterAndFindReleases(String name, String description, String releaseStatus, LocalDate releaseDate) {
+    public List<ReleaseDto> filterAndFindReleases(String name, String description, String releaseStatus, LocalDate releaseDate) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Release> cq = cb.createQuery(Release.class);
@@ -53,29 +55,52 @@ public class ReleaseServiceImpl implements ReleaseService {
         }
 
         TypedQuery<Release> query = em.createQuery(cq);
-        return query.getResultList();
+        return query.getResultList().stream().map(Mapper::map).toList();
     }
 
     @Override
-    public Release createRelease(ReleaseDto releaseDto) {
+    public ReleaseDto createRelease(ReleaseDto releaseDto) {
 
         Release newRelease = Release.builder()
                 .name(releaseDto.getName())
                 .description(releaseDto.getDescription())
-                .releaseStatus(ReleaseStatus.ON_PROD)
+                .releaseStatus(releaseDto.getReleaseStatus())
                 .releaseDate(releaseDto.getReleaseDate())
                 .build();
 
-        return releaseRepository.save(newRelease);
+        return Mapper.map(releaseRepository.save(newRelease));
     }
 
     @Override
-    public Release findReleaseById(Integer releaseId) {
-        return releaseRepository.findById(releaseId).get();
+    public ReleaseDto findReleaseById(Integer releaseId) {
+
+        Optional<Release> releaseOptional = releaseRepository.findById(releaseId);
+        if (releaseOptional.isPresent()) {
+            return Mapper.map(releaseOptional.get());
+        } else {
+            log.error("Release with id: {} not found", releaseId);
+            throw new ItemNotFoundException(releaseId);
+        }
     }
 
     @Override
     public void deleteRelease(Integer releaseId) {
         releaseRepository.deleteById(releaseId);
+    }
+
+    @Override
+    public ReleaseDto updateRelease(ReleaseDto releaseDto, Integer releaseId) {
+
+        Optional<Release> release = releaseRepository.findById(releaseId);
+        if (release.isEmpty()) {
+            log.error("Release with id: {} not found", releaseId);
+            throw new ItemNotFoundException(releaseId);
+        }
+        release.get().setReleaseStatus(releaseDto.getReleaseStatus());
+        release.get().setName(releaseDto.getName());
+        release.get().setDescription(releaseDto.getDescription());
+        release.get().setReleaseDate(releaseDto.getReleaseDate());
+
+        return Mapper.map(releaseRepository.save(release.get()));
     }
 }

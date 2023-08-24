@@ -8,6 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface ReleaseRepository extends JpaRepository<Release, Integer> {
-
     Optional<Release> findById(Integer releaseId);
 }

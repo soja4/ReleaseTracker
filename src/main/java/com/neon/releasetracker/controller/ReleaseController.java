@@ -1,6 +1,5 @@
 package com.neon.releasetracker.controller;
 
-import com.neon.releasetracker.domain.Release;
 import com.neon.releasetracker.dto.ReleaseDto;
 import com.neon.releasetracker.service.ReleaseService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ public class ReleaseController {
     private final ReleaseService releaseService;
 
     @GetMapping(path = "/releases")
-    public List<Release> getAllReleases(@RequestParam(required = false) String name,
+    public List<ReleaseDto> getAllReleases(@RequestParam(required = false) String name,
                                            @RequestParam(required = false) String description,
                                            @RequestParam(required = false) String status,
                                            @RequestParam(required = false) LocalDate releaseDate) {
@@ -36,19 +35,19 @@ public class ReleaseController {
     }
 
     @GetMapping(path = "/releases/{releaseId}")
-    public Release findReleaseById(@PathVariable Integer releaseId) {
+    public ReleaseDto findReleaseById(@PathVariable Integer releaseId) {
         log.info("request for getting release by id");
         return releaseService.findReleaseById(releaseId);
     }
     @PostMapping(path = "/releases")
-    public Release createRelease(@RequestBody ReleaseDto releaseDto) {
+    public ReleaseDto createRelease(@RequestBody ReleaseDto releaseDto) {
         log.info("request for creating new release");
         return releaseService.createRelease(releaseDto);
     }
     @PutMapping(path = "/releases/{releaseId}")
-    public ReleaseDto updateRelease() {
-        log.info("request for updating release");
-        return null;
+    public ReleaseDto updateRelease(@RequestBody ReleaseDto releaseDto, @PathVariable Integer releaseId) {
+        log.info("request for updating existing release");
+        return releaseService.updateRelease(releaseDto, releaseId);
     }
     @DeleteMapping(path = "/releases/{releaseId}")
     public void deleteRelease(@PathVariable Integer releaseId) {
