@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 
@@ -44,10 +45,10 @@ public class ReleaseControllerTest {
 
     @BeforeEach
     void setUp(){
-        releasesDto = List.of(new ReleaseDto("test 1", "desc 1", ReleaseStatus.CREATED, LocalDate.of(2023, Month.AUGUST, 24)),
-                new ReleaseDto("test 2", "desc 2", ReleaseStatus.ON_DEV, LocalDate.of(2023, Month.AUGUST, 25)),
-                new ReleaseDto("test 3", "desc 3", ReleaseStatus.ON_PROD, LocalDate.of(2023, Month.AUGUST, 26)));
-        releaseDto = new ReleaseDto("test 4", "desc 4", ReleaseStatus.DONE, LocalDate.of(2023, Month.AUGUST, 27));
+        releasesDto = List.of(new ReleaseDto("test 1", "desc 1", ReleaseStatus.CREATED, LocalDate.of(2023, Month.AUGUST, 24), LocalDateTime.now(), LocalDateTime.now()),
+                new ReleaseDto("test 2", "desc 2", ReleaseStatus.ON_DEV, LocalDate.of(2023, Month.AUGUST, 25), LocalDateTime.now(), LocalDateTime.now()),
+                new ReleaseDto("test 3", "desc 3", ReleaseStatus.ON_PROD, LocalDate.of(2023, Month.AUGUST, 26), LocalDateTime.now(), LocalDateTime.now()));
+        releaseDto = new ReleaseDto("test 4", "desc 4", ReleaseStatus.DONE, LocalDate.of(2023, Month.AUGUST, 27), LocalDateTime.now(), LocalDateTime.now());
     }
 
     @Test
@@ -123,7 +124,9 @@ public class ReleaseControllerTest {
     @Test
     public void deleteReleaseTest() throws Exception {
 
-        MvcResult result = this.mockMvc.perform(delete("/release-tracker/releases/1")
+        Integer releaseId = 1;
+
+        MvcResult result = this.mockMvc.perform(delete("/release-tracker/releases/{releaseId}", releaseId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -132,6 +135,6 @@ public class ReleaseControllerTest {
         assertThat(result).isNotNull();
         String releaseJson = result.getResponse().getContentAsString();
         assertThat(releaseJson).isNotEmpty();
-        assertThat(releaseJson).isEqualToIgnoringCase("Release is deleted");
+        assertThat(releaseJson).isEqualToIgnoringCase("Release with id: " + releaseId + " is deleted");
     }
 }
