@@ -57,6 +57,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>docker-release-tracker</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

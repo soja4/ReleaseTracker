@@ -5,7 +5,7 @@ import com.neon.releasetracker.domain.ReleaseStatus;
 import com.neon.releasetracker.dto.ReleaseDto;
 import com.neon.releasetracker.exception.NotFoundException;
 import com.neon.releasetracker.exception.ReleaseTrackerException;
-import com.neon.releasetracker.mapper.Mapper;
+import com.neon.releasetracker.mapper.ReleaseMapper;
 import com.neon.releasetracker.repository.ReleaseRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,35 +44,34 @@ public class ReleaseServiceImpl implements ReleaseService {
         Predicate releaseDescriptionPredicate = cb.like(release.get("description"), "%" + description + "%");
         Predicate releaseStatusPredicate = cb.equal(release.get("releaseStatus"), releaseStatus);
         Predicate releaseDatePredicate = cb.equal(release.get("releaseDate"), releaseDate);
+
+        List<Predicate> predicates = new ArrayList<>();
+
         if (name != null) {
-            cq.where(releaseNamePredicate);
+            predicates.add(releaseNamePredicate);
         }
         if (description != null) {
-            cq.where(releaseDescriptionPredicate);
+            predicates.add(releaseDescriptionPredicate);
         }
         if (releaseStatus != null) {
-            cq.where(releaseStatusPredicate);
+            predicates.add(releaseStatusPredicate);
         }
         if (releaseDate != null) {
-            cq.where(releaseDatePredicate);
+            predicates.add(releaseDatePredicate);
         }
+        cq.where(predicates.toArray(new Predicate[]{}));
 
         TypedQuery<Release> query = em.createQuery(cq);
-        return query.getResultList().stream().map(Mapper::map).toList();
+        return query.getResultList().stream().map(ReleaseMapper::map).toList();
     }
 
     @Override
     public ReleaseDto createRelease(ReleaseDto releaseDto) {
 
         try {
-            Release newRelease = Release.builder()
-                    .name(releaseDto.getName())
-                    .description(releaseDto.getDescription())
-                    .releaseStatus(releaseDto.getReleaseStatus())
-                    .releaseDate(releaseDto.getReleaseDate())
-                    .build();
+            Release newRelease = ReleaseMapper.toEntity(releaseDto);
 
-            return Mapper.map(releaseRepository.save(newRelease));
+            return ReleaseMapper.map(releaseRepository.save(newRelease));
         } catch (Exception e) {
             log.error("Error creating new release: " + e.getCause().getMessage());
             throw new ReleaseTrackerException("Error creating new release: " + e.getCause().getMessage());
@@ -83,7 +83,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 
         Optional<Release> releaseOptional = releaseRepository.findById(releaseId);
         if (releaseOptional.isPresent()) {
-            return Mapper.map(releaseOptional.get());
+            return ReleaseMapper.map(releaseOptional.get());
         } else {
             log.error("Release with id: {} not found", releaseId);
             throw new NotFoundException(releaseId);
@@ -114,7 +114,7 @@ public class ReleaseServiceImpl implements ReleaseService {
             release.get().setDescription(releaseDto.getDescription());
             release.get().setReleaseDate(releaseDto.getReleaseDate());
 
-            return Mapper.map(releaseRepository.save(release.get()));
+            return ReleaseMapper.map(releaseRepository.save(release.get()));
         } catch (Exception e) {
             log.error("Error updating new release with id: " + releaseId + " --- " + e.getCause().getMessage());
             throw new ReleaseTrackerException("Error updating new release with id: " + releaseId + " --- " + e.getCause().getMessage());

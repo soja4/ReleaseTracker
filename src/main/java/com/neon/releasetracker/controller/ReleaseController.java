@@ -33,29 +33,29 @@ public class ReleaseController {
                                            @RequestParam(required = false) String description,
                                            @RequestParam(required = false) ReleaseStatus releaseStatus,
                                            @RequestParam(required = false) LocalDate releaseDate) {
-        log.info("request for filtering and getting releases");
+        log.info("request for filtering and getting releases -- name: {}, description: {}, releaseStatus: {}, releaseDate: {}", name, description, releaseStatus, releaseDate);
         return releaseService.filterAndFindReleases(name, description, releaseStatus, releaseDate);
     }
 
     @GetMapping(path = "/releases/{releaseId}")
     public ReleaseDto findReleaseById(@PathVariable Integer releaseId) {
-        log.info("request for getting release by id");
+        log.info("request for getting release by id: {}", releaseId);
         return releaseService.findReleaseById(releaseId);
     }
     @PostMapping(path = "/releases")
     public ReleaseDto createRelease(@RequestBody ReleaseDto releaseDto) {
-        log.info("request for creating new release");
+        log.info("request for creating new release, releaseDto: {}", releaseDto);
         return releaseService.createRelease(releaseDto);
     }
     @PutMapping(path = "/releases/{releaseId}")
     public ReleaseDto updateRelease(@RequestBody ReleaseDto releaseDto, @PathVariable Integer releaseId) {
-        log.info("request for updating existing release");
+        log.info("request for updating existing release with id: {}, releaseDto: {}", releaseId, releaseDto);
         return releaseService.updateRelease(releaseDto, releaseId);
     }
     @DeleteMapping(path = "/releases/{releaseId}")
     public ResponseEntity<String> deleteRelease(@PathVariable Integer releaseId) {
-        log.info("request for deleting release");
+        log.info("request for deleting release with id: {}", releaseId);
         releaseService.deleteRelease(releaseId);
-        return new ResponseEntity<>("Release is deleted", HttpStatus.OK);
+        return new ResponseEntity<>("Release with id: " + releaseId + " is deleted", HttpStatus.OK);
     }
 }

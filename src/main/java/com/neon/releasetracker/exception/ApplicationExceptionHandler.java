@@ -16,41 +16,38 @@ public class ApplicationExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> handleNotFoundException(NotFoundException e) {
 
-        ApiExceptionOverride apiExceptionOverride = new ApiExceptionOverride(
+        ApiException apiException = new ApiException(
                 e.getMessage(),
-                HttpStatus.NOT_FOUND,
                 ZonedDateTime.now()
         );
-        log.error("Custom - Exception (NOT_FOUND): {}", apiExceptionOverride);
+        log.error("Custom - Exception (NOT_FOUND): {}", apiException);
         return new ResponseEntity<>(
-                apiExceptionOverride,
+                apiException,
                 HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ReleaseTrackerException.class)
     public ResponseEntity<Object> handleApiRequestException(ReleaseTrackerException e) {
 
-        ApiExceptionOverride apiExceptionOverride = new ApiExceptionOverride(
+        ApiException apiException = new ApiException(
                 e.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR,
                 ZonedDateTime.now()
         );
-        log.error("Custom - Exception (INTERNAL_SERVER_ERROR): {}", apiExceptionOverride);
+        log.error("Custom - Exception (INTERNAL_SERVER_ERROR): {}", apiException);
         return new ResponseEntity<>(
-                apiExceptionOverride,
+                apiException,
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Object> handleApiRequestNotReadableException(HttpMessageNotReadableException e) {
 
-        ApiExceptionOverride apiExceptionOverride = new ApiExceptionOverride(
+        ApiException apiException = new ApiException(
                 e.getMessage(),
-                HttpStatus.BAD_REQUEST,
                 ZonedDateTime.now()
         );
-        log.error("Custom - Exception (BAD_REQUEST): {}", apiExceptionOverride);
+        log.error("Custom - Exception (BAD_REQUEST): {}", apiException);
         return new ResponseEntity<>(
-                apiExceptionOverride,
+                apiException,
                 HttpStatus.BAD_REQUEST);
     }
 }
