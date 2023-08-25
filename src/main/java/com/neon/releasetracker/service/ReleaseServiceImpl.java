@@ -35,7 +35,6 @@ public class ReleaseServiceImpl implements ReleaseService {
 
     @Override
     public List<ReleaseDto> filterAndFindReleases(String name, String description, ReleaseStatus releaseStatus, LocalDate releaseDate) {
-
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Release> cq = cb.createQuery(Release.class);
 
@@ -62,6 +61,7 @@ public class ReleaseServiceImpl implements ReleaseService {
         cq.where(predicates.toArray(new Predicate[]{}));
 
         TypedQuery<Release> query = em.createQuery(cq);
+        log.info("Query for searching releases is executed");
         return query.getResultList().stream().map(ReleaseMapper::map).toList();
     }
 
@@ -71,6 +71,7 @@ public class ReleaseServiceImpl implements ReleaseService {
         try {
             Release newRelease = ReleaseMapper.toEntity(releaseDto);
 
+            log.info("Saving new release in db, request: {}", releaseDto);
             return ReleaseMapper.map(releaseRepository.save(newRelease));
         } catch (Exception e) {
             log.error("Error creating new release: " + e.getCause().getMessage());
@@ -83,6 +84,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 
         Optional<Release> releaseOptional = releaseRepository.findById(releaseId);
         if (releaseOptional.isPresent()) {
+            log.info("Release found with id: {}", releaseId);
             return ReleaseMapper.map(releaseOptional.get());
         } else {
             log.error("Release with id: {} not found", releaseId);
@@ -97,6 +99,7 @@ public class ReleaseServiceImpl implements ReleaseService {
             log.error("Release with id: {} not found", releaseId);
             throw new NotFoundException(releaseId);
         }
+        log.info("Deleting release with id: {}", releaseId);
         releaseRepository.deleteById(releaseId);
     }
 
@@ -114,6 +117,7 @@ public class ReleaseServiceImpl implements ReleaseService {
             release.get().setDescription(releaseDto.getDescription());
             release.get().setReleaseDate(releaseDto.getReleaseDate());
 
+            log.info("Updating release with id: {}", releaseId);
             return ReleaseMapper.map(releaseRepository.save(release.get()));
         } catch (Exception e) {
             log.error("Error updating new release with id: " + releaseId + " --- " + e.getCause().getMessage());
