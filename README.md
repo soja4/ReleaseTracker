@@ -19,14 +19,17 @@ Technologies that are used in application:
 ## How to run application
 
 Considering that application will be running in Docker, application jar file has to be created first.
+```
 mvn clean install
-
+```
 After creating jar file you need to create image.
+```
 docker build -f Dockerfile -t docker-release-ticket .
-
+```
 After creating image we need to run docker image in docker container
+```
 docker run -p 8080:8080 docker-release-tracker
-
+```
 Application will be up and running on port 8080
 
 Accessing h2 database --> http://localhost:8080/h2-console
