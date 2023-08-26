@@ -22,7 +22,7 @@ Considering that application will be running in Docker, application jar file has
 ```
 mvn clean install
 ```
-Application jar file docker-release-tracker.jar can be found in targer folder. After creating jar file you need to create image.
+Application jar file docker-release-tracker.jar can be found in target folder. After creating jar file you need to create image.
 ```
 docker build -f Dockerfile -t docker-release-ticket .
 ```
