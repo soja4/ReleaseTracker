@@ -73,7 +73,7 @@ public class ReleaseControllerTest {
     @Test
     public void getReleasesTest() throws Exception {
 
-        when(releaseService.filterAndFindReleases(any(String.class), any(String.class), any(ReleaseStatus.class), any(LocalDate.class))).thenReturn(releasesDto);
+        when(releaseService.filterAndFindReleases(any(), any(), any(), any())).thenReturn(releasesDto);
 
         MvcResult result = this.mockMvc.perform(get("/release-tracker/releases")
                 .contentType(MediaType.APPLICATION_JSON)
